@@ -78,11 +78,10 @@ By knowing individual data points of the true function, the possible course of t
 
 ## Acquisition Function
 
-Die Surrogate Funktion wird nach jedem Berechnungsschritt erneut berechnet und dient als Grundlage für die Wahl des nächsten Berechnungsschrittes. Hierfür wird eine Aquisitions Funktion eingeführt. Die wohl populärste Aquisitions Funktion im Kontext der Hpyerparameter Optimieriung ist der Informationsgewinn.
-Neben der Expected Improvement, werden:
+The surrogate function is recalculated after each calculation step and serves as the basis for selecting the next calculation step. For this purpose, an acquisition function is introduced. The most popular acquisition function in the context of Hpyer parameter optimisation is the information gain.
+In addition to the Expected Improvement the following Acquisition Functions are 
+used:
 
 - Knowledge gradient
 - Entropy search 
 - Predictive entropy
-
-verwendet.
