@@ -27,5 +27,62 @@ So the target of hyperparameter optimization in this case would be to find the o
 where the Loss (e.g. the CV Score) is minimal. Since the analytical form of the function CV is not given, 
 we speaking about a so called Black Box Function. 
 
+<img src="/img/black_box_function.png" style="width:100%">
+<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+
+<img src="/img/black_box_function_evaluation.png" style="width:100%">
+<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+
+What we could do, is just calculate the value of f(x) for mupltiple position in the defined hyperparameter space. Like grid or random search is doing it. Afterwards we simply identify the Hyperparameter combination with the optimal value.
+
+Definitely a valid approach, at least for so called “cheap” black-box function, where the computation effort to calculate the CV values is low. But what if the evaluation of the function pretty costly (so the computational time and/or cost to calculate CV is high)? In this case it may makes sense to think about more “intelligent” ways to find the optimal value. [Cas13]
+
+<img src="/img/cheap_and_costly_black_box_function.png" style="width:100%">
+<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+
+When speaking about costly black-box functions, the outcome of interest is expensive or time-consuming to calculate, a “cheaper” surrogate function could help. 
+The Surrogate Function should approximates the black-box function f(x) [Cas13].
+
+In total, the time needed to compute the needed sample values and the surrogate function, should be less time-consuming than calculating each point in the hyperparameter space. To model the surrogate function, a wide range of machine learning techniques is used, like Polynomial Regression, Support Vector Machine, Neuronal Nets and probably the most popular, the Gaussian Process (GP).
+Damit kann die Bayesian Optimization dem Feld des Active Learning zugeordnet werden, genauer dem Feld der „uncertainty reduction“. Als Maßstab für die uncertainty wird häufig die Varianz verwendet. Der Gaussian Process (GP) ist in der Lage eben die uncertainity mit abzubilden. [utils]
+For the above regression problem, the following black-box function results. In order to be able to map the function with sufficient accuracy for the defined hyperparameter space, this range must be appropriately fine-granularly ebased. In this case we assume a predefined hyperparameter space (polynomial degree = 1 - 100). Since the polynomial degree can only assume integer values, there are 30 cross validations to be carried out for this delimited range.
+
+<img src="/img/evaluation_steps.png" style="width:100%">
+<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+
+## Surrogate Function
+
+To reduce the number of necessary data points, 
+we try to find a suitable surrogate function with few 
+data points that approximates the actual course of our black-box function 
+f(x) = CV(lambda). The best-known surrogate function in the context 
+of hyperparameter optimisation is the Gaussian process, or more 
+precisely the Gaussian process regression. A more detailed explanation 
+of how the Gaussian Process Regression works can be found in "Gaussian 
+Processes for Machine Learning" by Carl Edward Rasmussen and Christopher 
+K. I. Williams, which is available for free at:
+
+http://www.gaussianprocess.org/gpml/chapters/
+
+You can also find an explanation of Gauss Process Regression in one of my recent articles:
+
+https://towardsdatascience.com/7-of-the-most-commonly-used-regression-algorithms-and-how-to-choose-the-right-one-fc3c8890f9e3
+
+In short, Gaussian process regression defines a priori Gaussian process that already includes prior knowledge of the true function. Since we usually have no knowledge about the true course of our black box function, a constant function with some covariance is usually freely chosen as the Priori Gauss.
 
 
+....
+
+By knowing individual data points of the true function, the possible course of the function is gradually narrowed down.
+
+
+## Acquisition Function
+
+Die Surrogate Funktion wird nach jedem Berechnungsschritt erneut berechnet und dient als Grundlage für die Wahl des nächsten Berechnungsschrittes. Hierfür wird eine Aquisitions Funktion eingeführt. Die wohl populärste Aquisitions Funktion im Kontext der Hpyerparameter Optimieriung ist der Informationsgewinn.
+Neben der Expected Improvement, werden:
+
+- Knowledge gradient
+- Entropy search 
+- Predictive entropy
+
+verwendet.
