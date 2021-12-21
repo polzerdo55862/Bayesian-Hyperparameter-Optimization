@@ -309,8 +309,18 @@ def plot_2d_evaluation_plot(epsilon_min, epsilon_max, C_min, C_max, step, X, y):
     #ax1.set(xlim=(min(x_plot), max(x_plot)), ylim=(min(y_plot), max(y_plot)))
     # ax1.set_title('grid and contour (%d points, %d grid points)' %
     #              (npts, ngridx * ngridy))
-    ax1.set_xlabel('C')
+    ax1.set_xlabel('Epsilon')
     ax1.set_ylabel('Cross-val. score')
+
+
+    #calc optimal epsilon setting
+    max_cv_score = max(cv_scores)
+    index_max_cv_score = cv_scores.index(max_cv_score)
+    epsilon_optimal = epsilon_settings[index_max_cv_score]
+    ax1.axvline(x=epsilon_optimal, color = 'grey')
+    ax1.axhline(y=max_cv_score, color = 'grey')
+
+    ax1.title.set_text("C = {} / Espilon = {} - {} / Optimal Epsilon Setting: {}".format(C_min, epsilon_min, epsilon_max, epsilon_optimal))
 
     hyperparameter_opt_2d_df = pd.DataFrame(
         {'c_setting': c_settings,
@@ -440,35 +450,35 @@ def plot_gaussian_process(X_train_sample, y_train_sample,
     X, ei, X_next_sample_point = calculate_expected_improvement(X_train_sample, y_train_sample, x_min, x_max, gpr, xi=0.01)
 
     #fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(10, 8))
-    fig, axs = plt.subplots(nrows=3, figsize=(10, 8))
+    fig, axs = plt.subplots(nrows=2, figsize=(10, 5))
 
     # plot prior
     # axs[0] = plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[0],
     #                           x_min=x_min, x_max=x_max,
     #                           y_min=y_min, y_max=y_max)
-    axs[0].plot(X_black_box, y_black_box)
-    axs[0].set_title("Black-box function (calculated using Grid Search)")
+    #axs[0].plot(X_black_box, y_black_box)
+    #axs[0].set_title("Black-box function (calculated using Grid Search)")
 
     # plot posterior
     gpr.fit(X_train_sample, y_train_sample)
-    axs[1] = plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[1], x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
-    axs[1].plot(X_black_box, y_black_box, label='Real Black-box function')
-    axs[1].scatter(X_train_sample[:, 0], y_train_sample, color="red", zorder=10, label="Observations")
-    axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
-    #axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper right")
-    axs[1].set_title("Posteriori Gaussian Process")
+    axs[0] = plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[0], x_min=x_min, x_max=x_max, y_min=y_min, y_max=y_max)
+    axs[0].plot(X_black_box, y_black_box, label='Real Black-box function')
+    axs[0].scatter(X_train_sample[:, 0], y_train_sample, color="red", zorder=10, label="Observations")
+    axs[0].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
+    # axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper right")
+    axs[0].set_title("Posteriori Gaussian Process")
 
-    #fig.suptitle("Radial Basis Function kernel", fontsize=18)
-    
-    axs[2].plot(X, ei, color='black')
-    axs[2].set_xlabel("x")
-    axs[2].set_ylabel("y")
-    axs[2].set_title("Expected Improvement - Next sample point: " + str(round(X_next_sample_point,2)))
-    #axs[2].set_ylim([0,20])
+    # fig.suptitle("Radial Basis Function kernel", fontsize=18)
+
+    axs[1].plot(X, ei, color='black')
+    axs[1].set_xlabel("x")
+    axs[1].set_ylabel("y")
+    axs[1].set_title("Expected Improvement - Next sample point: " + str(round(X_next_sample_point, 2)))
+    # axs[1].set_ylim([0,20])
 
     plt.tight_layout()
     plt.savefig(r"./plots/bayesian_opt_samples_" + str(len(X_train_sample)) + ".png", dpi=150)
-    #plt.show()
+    # plt.show()
 
     return X_next_sample_point
 

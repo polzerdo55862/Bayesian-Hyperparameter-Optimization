@@ -1,6 +1,7 @@
 #import required libaries
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # import customized helper functions
 import helper_functions
@@ -18,6 +19,35 @@ def create_sample_svm_regression_plots():
     C_samples = [1, 5, 10]
 
     helper_functions.plot_sample_svm_models(epsilon_samples, C_samples, X, y)
+
+#######################################################################################################################
+# Plot sample SVM Regression Model for boston housing data set
+#######################################################################################################################
+
+def plot_sample_svm_regression_model():
+    # test data set
+    epsilon = [2, 2, 2]
+    C = [1, 5, 10]
+
+    plt.figure(figsize=(10, 5))
+    ax = plt.subplot(1, 1, 1)
+    # plt.setp(ax)
+
+    for i in range(len(C)):
+        X_test, y_test, scores = helper_functions.cross_validation_svm_regression(X, y, C[i], epsilon[i])
+        plt.plot(X_test, y_test, label="Model (C = " + str(C[i]) + ", Epsilon = " + str(
+            epsilon[i]) + ") - Cross val. score / MSE: " + str(round(-scores.mean(), 2)))
+
+    plt.scatter(X, y, edgecolor='black', color='grey', s=20, label="Data set")
+    plt.xlabel("LSTAT [%]")
+    plt.ylabel("MEDV [$1000]")
+
+    plt.legend(loc="best")
+    # plt.title("Degree {}\nMSE = {:.2e}(+/- {:.2e})".format(
+    #    degrees[i], -scores.mean(), scores.std()))
+    plt.show()
+
+    plt.savefig("polynomial_regression_example.png", dpi=150)
 
 #######################################################################################################################
 # Define hyperparameter space and plot 3d-hyperparameter-evaluation plot
@@ -141,8 +171,9 @@ def bayesian_optimization(sample_iterations, C_fix, Epsilon_initial_sample):
 # Execute defined functions to create plots
 #######################################################################################################################
 
+#plot_sample_svm_regression_model()
 #create_sample_svm_regression_plots()
 #create_3d_evaluation_plot()
-#create_2d_evaluation_plot()
-bayesian_optimization(sample_iterations=8, C_fix = 7, Epsilon_initial_sample = 3.5)
+create_2d_evaluation_plot()
+#bayesian_optimization(sample_iterations=8, C_fix = 7, Epsilon_initial_sample = 3.5)
 
