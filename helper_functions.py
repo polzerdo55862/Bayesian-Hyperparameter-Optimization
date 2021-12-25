@@ -450,7 +450,7 @@ def plot_gaussian_process(X_train_sample, y_train_sample,
     X, ei, X_next_sample_point = calculate_expected_improvement(X_train_sample, y_train_sample, x_min, x_max, gpr, xi=0.01)
 
     #fig, axs = plt.subplots(nrows=3, sharex=True, sharey=True, figsize=(10, 8))
-    fig, axs = plt.subplots(nrows=2, figsize=(10, 5))
+    fig, axs = plt.subplots(nrows=2, figsize=(10, 6))
 
     # plot prior
     # axs[0] = plot_gpr_samples(gpr, n_samples=n_samples, ax=axs[0],
@@ -465,15 +465,19 @@ def plot_gaussian_process(X_train_sample, y_train_sample,
     axs[0].plot(X_black_box, y_black_box, label='Real Black-box function')
     axs[0].scatter(X_train_sample[:, 0], y_train_sample, color="red", zorder=10, label="Observations")
     axs[0].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
+    axs[0].set_xlabel("Epsilon")
+    axs[0].set_ylabel("Expected Improvement")
     # axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper right")
     axs[0].set_title("Posteriori Gaussian Process")
 
     # fig.suptitle("Radial Basis Function kernel", fontsize=18)
 
     axs[1].plot(X, ei, color='black')
-    axs[1].set_xlabel("x")
-    axs[1].set_ylabel("y")
+    axs[1].set_xlabel("Epsilon")
+    axs[1].set_ylabel("Neg. cross-val. score")
     axs[1].set_title("Expected Improvement - Next sample point: " + str(round(X_next_sample_point, 2)))
+    axs[1].axvline(x=X_next_sample_point, color='red', label='Next sample')
+    axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
     # axs[1].set_ylim([0,20])
 
     plt.tight_layout()

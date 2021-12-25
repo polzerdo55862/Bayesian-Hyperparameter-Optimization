@@ -174,6 +174,7 @@ def bayesian_optimization(sample_iterations, C_fix, Epsilon_initial_sample):
 #plot_sample_svm_regression_model()
 #create_sample_svm_regression_plots()
 #create_3d_evaluation_plot()
-create_2d_evaluation_plot()
-#bayesian_optimization(sample_iterations=8, C_fix = 7, Epsilon_initial_sample = 3.5)
+#create_2d_evaluation_plot()
+
+bayesian_optimization(sample_iterations=8, C_fix = 7, Epsilon_initial_sample = 3.5)
 
