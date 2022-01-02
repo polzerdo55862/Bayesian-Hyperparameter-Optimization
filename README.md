@@ -3,11 +3,15 @@
 ### Table of content
 
 * [Introduction](#introduction)
-* 
+* [Hyperparameter Optimization](#hyperparameter opt)
+    * [Objective Function](#objective)
+    * [Grid Search](#grid search)
+    * [From Grid Search to Baysian Optimization](#baysian)
+    * [Baysian Optimization](#baysian opt)
 
 
 
-### Introduction <a name="introduction"/>
+## Introduction <a name="introduction"/>
 
 
 The performance of a machine learning method depends on the used data set and the 
@@ -56,8 +60,11 @@ we speak about a so called Black Box Function.
 <img src="/img/black_box_function_evaluation.png" style="width:100%">
 <figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
 
-What we could do, is just calculate the value of f(x) for mupltiple hyperparameter settings in the defined hyperparameter space - like 
-grid or random search is doing it. Afterwards we simply identify the hyperparameter combination resulting in the lowest loss.
+What we could do, is just calculate the value of f(x) for mupltiple hyperparameter settings 
+in the defined hyperparameter space and choose the hyperparameter combination with the lowest
+loss - like grid is doing it.
+
+## Grid Search <a name="grid search"/>
 
 <img src="/img/black_box_calculation.png" style="width:100%">
 <figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
