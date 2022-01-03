@@ -29,7 +29,11 @@ hyperparameter optimization. More specifically, we want to model a possible corr
 <figcaption align = "center"><b>Boston housing data set - Image by the author (Data: [CST79])</b></figcaption>
 
 In the following, we want to use Support Vector Regression (SVR) for model building. 
-SVR enables presetting via the hyperparameters ding and ding, among others.
+
+## Support Vector Regression
+
+The functionality of the Support Vector Regression (SVR) is based on the Support Vector Machine (SVM) 
+and will first be explained with a simple example. We are looking for the linear function:
 
 <img src="/img/function_of_support_vector_regression_slack_variable.png" style="width:100%">
 <figcaption align = "center"><b>Boston housing data set - Image by the author (Data: [CST79])</b></figcaption>
@@ -49,25 +53,36 @@ Therefor the data set is split in k subsets. Following k-1 subsets are used as t
 <img src="/img/cross_val_score.png" style="width:100%">
 <figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
 
-The target of hyperparameter optimization is to find the optimal hyperparameter settings, in this case, 
-where the Loss (e.g. the CV Score) is minimal (in the following we try find the maximum for the negative CV score). 
-Since the analytical form of the function f(x) = CV is not given, 
-we speak about a so called Black Box Function. 
+The target of hyperparameter optimization is to find the optimal hyperparameter settings, 
+in this case, where the Loss (e.g. the CV Score) is minimal (in the following we try find 
+the maximum for the negative CV score). 
 
-<img src="/img/black_box_function.png" style="width:100%">
-<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])</b></figcaption>
-
+* **Objective function:** The objective function of a mathematical optimization problems is the real-valued function which should be minimized or maximized []
 <img src="/img/black_box_function_evaluation.png" style="width:100%">
-<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+<figcaption align = "center"><b>Optimization problem- Image by the author"</b></figcaption>
+
+* **Black-box function:** A black-box function is a system where the internal workings is unknown. Systems like transistors, engines and human brains are often described as black-box systems.
+<img src="/img/black_box_function.png" style="width:100%">
+<figcaption align = "center"><b>Black-box function – Image by the author (inspired by [Sic18])</b></figcaption>
 
 What we could do, is just calculate the value of f(x) for mupltiple hyperparameter settings 
 in the defined hyperparameter space and choose the hyperparameter combination with the lowest
 loss - like grid is doing it.
 
+<img src="/img/black_box_calculation.png" style="width:100%">
+<figcaption align = "center"><b>Sample calculation of the black-box function for different hyperparameter settings – Image by the Author</b></figcaption>
+
 ## Grid Search <a name="grid search"/>
 
-<img src="/img/black_box_calculation.png" style="width:100%">
-<figcaption align = "center"><b>K-fold Cross Validation – Image by the author (inspired by [Sic18])"</b></figcaption>
+Grid Search is the easiest way to search for the optimal Hyperparameter settings.
+
+1. Choose an appropriate scale of your hypparameters and define a search space
+2. Iterate in steps over the defined space and calculate the value of te black-box function - here the cross-val. score
+
+<img src="/img/grid_search_example.png" style="width:100%">
+<figcaption align = "center"><b>s – Image by the Author</b></figcaption>
+
+# From Grid to Baysian Optimization <a name="grid to baysian"/>
 
 Definitely a valid approach, at least for so called “cheap” black-box function, where the computation effort to calculate the CV values is low. 
 But what if the evaluation of the function is costly, so the computational time and/or cost to calculate CV is high? 
@@ -164,7 +179,8 @@ In addition to the Expected Improvement the following Acquisition Functions are 
 
 ### References
 
-[Agn20] Agnihotri, Apoorv; Batra, Nipun.  https://distill.pub/2020/bayesian-optimization/. 2020 <br>
+[Agn20] Agnihotri, Apoorv; Batra, Nipun.  https://distill.pub/2020/bayesian-optimization/. 2020. <br>
 [Cas13] Cassilo, Andrea. A Tutorial on Black–Box Optimization. https://www.lix.polytechnique.fr/~dambrosio/blackbox_material/Cassioli_1.pdf. 2013.<br>
 [CST79] U.S. Census Service. https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html <br>
 [Sci18] Sicotte, Xavier. Cross validation estimator. https://stats.stackexchange.com/questions/365224/cross-validation-and-confidence-interval-of-the-true-error/365231#365231. 2018 <br>
+[Was21] University of Washington. https://sites.math.washington.edu/. 2021. <br>
