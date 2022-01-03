@@ -18,6 +18,35 @@ The performance of a machine learning method depends on the used data set and th
 chosen hyperparameter settings for the model training. 
 Finding the optimal hyperparameter settings is crucial for building the best possible model 
 for the given data set.
+
+This article describes the basic procedure for hyperparameter optimisation. Simple procedures such 
+as grid search, which scan a defined hyperparameter space, reach their limits when the calculation 
+of the loss function is computationally intensive.
+
+In order to reduce the computing power required to find the optimal hyperparameter settings, 
+Baysian optimisation uses Bayes' theorem.
+
+In simple terms, the Bayes' theorem is used to calculate the probability of an event based on its 
+association with another event [Hel19].
+
+<img src="/img/bayes_theorem.png" style="width:100%">
+<figcaption align = "center">
+    <b>Bayes' theorem</b>
+</figcaption>
+
+A popular application ot the Bayes' theorem is the diesease detection. For rapid tests one is interested in how high the actual probability is,
+that a positive tested person actually has the diseas.[Fah16]
+
+In the context of hyperparameter optimisation, we would like to infer the probability distribution of the loss values of a second non-calculated 
+hyperparameter combination by calculating the loss of a hyperparameter combination.
+
+With the help of some calculated "true" values of the loss function, we would like to model the function of 
+the loss function over the entire hyperparameter space - a so-called surrogate function.
+
+In Gauss Process Regression, the resulting model provides not only an approximation of the true loss function but also the confidence interval to the non-calculated function areas. 
+This information is used in the following to identify the hyperparameter combination whose calculation brings the greatest "information gain", 
+which will probably help the most to model an accurate Surrogate Function.
+
 In the following, the Boston Housing data set (https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html) is used to illustrate the procedure for 
 hyperparameter optimization. More specifically, we want to model a possible correlation between MEDV and LSTAT.
 
@@ -182,5 +211,8 @@ In addition to the Expected Improvement the following Acquisition Functions are 
 [Agn20] Agnihotri, Apoorv; Batra, Nipun.  https://distill.pub/2020/bayesian-optimization/. 2020. <br>
 [Cas13] Cassilo, Andrea. A Tutorial on Black–Box Optimization. https://www.lix.polytechnique.fr/~dambrosio/blackbox_material/Cassioli_1.pdf. 2013.<br>
 [CST79] U.S. Census Service. https://www.cs.toronto.edu/~delve/data/boston/bostonDetail.html <br>
+[Fah16] Fahrmeir, L.; Heumann, C.; Künstler, R. Statistik: Der Weg zur Datenanalyse. Springer-Lehrbuch. Springer Spektrum, Berlin and Heidelberg, 8., überarbeitete und ergänzte auflage Auflage, 2016. ISBN 978–3–662 50371–3. doi:10.1007/978–3–662–50372–0
+[Hel19] Helmenstine, Anne Marie. Bayes Theorem Definition and Examples. https://www.thoughtco.com/bayes-theorem-4155845. 2019. <br>
 [Sci18] Sicotte, Xavier. Cross validation estimator. https://stats.stackexchange.com/questions/365224/cross-validation-and-confidence-interval-of-the-true-error/365231#365231. 2018 <br>
 [Was21] University of Washington. https://sites.math.washington.edu/. 2021. <br>
+
