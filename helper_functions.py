@@ -23,6 +23,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 ######################################################################################################
 # Boston Housing Dataset
@@ -58,7 +59,9 @@ def read_boston_housing():
     X,y: defined data set
     '''
     column_names = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT', 'MEDV']
-    data = read_csv('data/boston_housing.csv', header=None, delimiter=r"\s+", names=column_names)
+    parent_path = os.path.dirname(os.path.abspath(__file__))
+    file = parent_path + r'\data\boston_housing.csv'
+    data = read_csv(file, header=None, delimiter=r"\s+", names=column_names)
     print(data.head(5))
 
     # LSTAT: % lower status of the population
@@ -352,7 +355,8 @@ def model_gp_function(X_train_sample, y_train_sample):
 
     # Choosing a kernel
     #kernel = 1.0 * RBF(length_scale=0.3, length_scale_bounds=(1e-1, 40.0))
-    kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level=1, noise_level_bounds=(1e-10, 1e1))
+    #kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level=1, noise_level_bounds=(1e-10, 1e1))
+    kernel = 1.0 * RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e3))
 
     # define GP regressor and train model
     gpr = GaussianProcessRegressor(kernel=kernel, random_state=2)
@@ -362,7 +366,7 @@ def model_gp_function(X_train_sample, y_train_sample):
 
 def generate_train_data_set(C_list, Epsilon_list, X, y):
     '''
-    Use C_list and Epsilon_list to gerate a train data set for training the GP regression model, the surrogate model
+    Use C_list and Epsilon_list to generate a train data set for training the GP regression model, the surrogate model
     Parameters
     ----------
     x_next_sample_point
@@ -466,15 +470,15 @@ def plot_gaussian_process(X_train_sample, y_train_sample,
     axs[0].scatter(X_train_sample[:, 0], y_train_sample, color="red", zorder=10, label="Observations")
     axs[0].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
     axs[0].set_xlabel("Epsilon")
-    axs[0].set_ylabel("Expected Improvement")
+    axs[0].set_ylabel("Neg. cross-val. score")
     # axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper right")
-    axs[0].set_title("Posteriori Gaussian Process")
+    axs[0].set_title("Posteriori Gaussian Process - " + str(len(X_train_sample[:, 0])) + " sampling point(s)" )
 
     # fig.suptitle("Radial Basis Function kernel", fontsize=18)
 
     axs[1].plot(X, ei, color='black')
     axs[1].set_xlabel("Epsilon")
-    axs[1].set_ylabel("Neg. cross-val. score")
+    axs[1].set_ylabel("Expected Improvement")
     axs[1].set_title("Expected Improvement - Next sample point: " + str(round(X_next_sample_point, 2)))
     axs[1].axvline(x=X_next_sample_point, color='red', label='Next sample')
     axs[1].legend(bbox_to_anchor=(1.05, 1.0), loc="upper left")
@@ -482,6 +486,7 @@ def plot_gaussian_process(X_train_sample, y_train_sample,
 
     plt.tight_layout()
     plt.savefig(r"./plots/bayesian_opt_samples_" + str(len(X_train_sample)) + ".png", dpi=150)
+    plt.savefig(r"./plots/bayesian_opt_samples_" + str(len(X_train_sample)) + ".svg")
     # plt.show()
 
     return X_next_sample_point
@@ -504,40 +509,42 @@ def calculate_expected_improvement(X_train_sample, y_train_sample, x_min, x_max,
 
     Source:
      - http://krasserm.github.io/2018/03/21/bayesian-optimization/
-     - https://brenda
-     nhasz.github.io/2019/03/28/hyperparameter-optimization.html#hyperparameter-optimization
+     - https://brendanhasz.github.io/2019/03/28/hyperparameter-optimization.html#hyperparameter-optimization
+     - https://stats.stackexchange.com/questions/502590/expected-improvement-formula-for-bayesian-optimisation
+     - https://arxiv.org/abs/1705.10033
     '''
+
     # Define n-values between x_min and x_max as X to plot EI and GP
     x = np.linspace(x_min, x_max, 100)
     X = x.reshape(-1, 1)
 
-    # Train GP model with train data set (X_train_sample, y_train_sample) - contains already calculated data points of the black-box function
+    # Train GP model with train data set (X_train_sample, y_train_sample)
+    # - contains already calculated data points of the black-box function
     gpr = model_gp_function(X_train_sample, y_train_sample)
     mu, sigma = gpr.predict(X, return_std=True)
-    mu_sample = gpr.predict(X_train_sample)
-
-    #sigma = sigma.reshape(-1, 1)
-
-    # Needed for noise-based model,
-    # otherwise use np.max(Y_sample).
-    # See also section 2.4 in [1]
-    #mu_sample_opt = np.max(mu_sample)
+    #mu_sample = gpr.predict(X_train_sample)
 
     with np.errstate(divide='warn'):
-        #imp = mu - mu_sample_opt - xi
-        imp = mu - xi
-        Z = imp / sigma
-        ei = imp * norm.cdf(Z) + sigma * norm.pdf(Z)
-        try:
-            ei[sigma == 0.0] = 0.0
-        except:
-            pass
+        # mu is the mean of the distribution defined by the Gaussian process
+        # sigma is the standard deviation of the distribution defined by the Gaussian process
+        # norm.cdf(Z) is the standard normal cumulative density function
+        # norm.pdf(Z) is the standard normal probability density function
+        # xi is an exploration parameter
+        Z = (mu - max(y_train_sample) - xi) / sigma
+        ei = (mu - max(y_train_sample)) * norm.cdf(Z) + sigma * norm.pdf(Z)
+
+        # try:
+        #     ei[sigma == 0.0] = 0.0
+        # except:
+        #     pass
 
     # find maximum value of expected improvement in space x_min - x_max
     ei_max = max(ei)
-    # find index of max
+
+    # find index of max EI
     max_index = ei.tolist().index(ei_max)
-    #find corresponding X value
+
+    # find corresponding X value
     X_next_sample_point = X[max_index][0]
 
     return X, ei, X_next_sample_point

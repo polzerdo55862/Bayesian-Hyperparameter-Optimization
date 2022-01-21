@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 # import customized helper functions
 import helper_functions
+import os
 
 #load the dataset 'Boston housing'
 X, y = helper_functions.read_boston_housing()
@@ -116,27 +117,13 @@ def create_2d_evaluation_plot():
 def bayesian_optimization(sample_iterations, C_fix, Epsilon_initial_sample):
 
     # read black-box function values
-    df = pd.read_csv (r'.\data\hyperparameter_evaluation_2d_epsilon=0.01-15_C=7-7.0001.csv')
+    parent_path = os.path.dirname(os.path.abspath(__file__))
+    file = parent_path + r'\data\hyperparameter_evaluation_2d_epsilon=0.01-15_C=7-7.0001.csv'
+    df = pd.read_csv (file)
 
+    # define a random first sample point
     C_list =[C_fix]
     Epsilon_list = [Epsilon_initial_sample]
-
-    C_list =[C_fix]
-    Epsilon_list = [Epsilon_initial_sample]
-
-    # #calculate cv score for sample points
-    # cv_scores, c_settings, epsilon_settings = helper_functions.grid_search(Epsilon_list, C_list, X, y)
-    #
-    # #select_sample_indexes = [19, 40, 60, 90, 200, 220]
-    # y_train_sample = cv_scores
-    # X_train_sample = epsilon_settings
-
-    # for i in select_sample_indexes:
-    #     y_train_sample.append(df.cv_scores.tolist()[i])
-    #     X_train_sample.append(df.epsilon_setting.tolist()[i])
-
-    # X_train_sample = np.array(X_train_sample)
-    # X_train_sample = X_train_sample.reshape(-1, 1)
 
     X_train_sample, y_train_sample = helper_functions.generate_train_data_set(C_list, Epsilon_list, X, y)
 
@@ -162,10 +149,6 @@ def bayesian_optimization(sample_iterations, C_fix, Epsilon_initial_sample):
         Epsilon_list.append(x_next_sample_point)
         X_train_sample, y_train_sample = helper_functions.generate_train_data_set(C_list, Epsilon_list, X, y)
 
-        #helper_functions.grid_search(epsilon_list, C_list, X, y)
-
-        #helper_functions.calculate_expected_improvement(X, X_sample, Y_sample, gpr, xi=0.01)
-
 
 #######################################################################################################################
 # Execute defined functions to create plots
@@ -177,4 +160,3 @@ def bayesian_optimization(sample_iterations, C_fix, Epsilon_initial_sample):
 #create_2d_evaluation_plot()
 
 bayesian_optimization(sample_iterations=8, C_fix = 7, Epsilon_initial_sample = 3.5)
-
